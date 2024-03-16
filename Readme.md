@@ -43,3 +43,7 @@ The Initial Spread Index (ISI) is a numeric rating of the expected rate of fire 
 | ----------- | --------------------------------------- |
 | area        | Total burned area (in ha)               |
 
+# Todo list
+
+- [ ] Solve a regression problem
+- [ ] Address the issue of positive skewness of the data
