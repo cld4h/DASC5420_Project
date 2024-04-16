@@ -7,35 +7,37 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{booktabs} % for tables
+
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Predicting Stock Market Volatility with Time Series Machine Learning Models\\
+\title{Predicting Stock Market Volatility with Time Series Models\\
 }
 
 \author{\IEEEauthorblockN{1\textsuperscript{st} Xu Hao}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
+\IEEEauthorblockA{\textit{Department of Mathematics \& Statistics} \\
+\textit{Thompson Rivers University}\\
+Kamloops, Canada \\
+xuh23@mytru.ca}
 \and
 \IEEEauthorblockN{2\textsuperscript{nd} Mulk Waqar Ul}
-\IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
-\textit{name of organization (of Aff.)}\\
-City, Country \\
-email address or ORCID}
+\IEEEauthorblockA{\textit{Department of Mathematics \& Statistics} \\
+\textit{Thompson Rivers University}\\
+Kamloops, Canada \\
+mulkw22@mytru.ca}
 }
 
 \maketitle
 
 \begin{abstract}
-Predicting stock market movements is a significant challenge for traders, investors, and businesses, yet it can be highly profitable with precise forecasts. Achieving accurate predictions is crucial, particularly given the volatile, nonlinear, and unpredictable nature of the stock market. In this paper we are predicting stock prices of Apple using two machine learning algorithms - Linear Regression and Autoregressive Integrated Moving Average (ARIMA) by comparing their forecasting performances. The analysis spans a period of eight years, from April 1st, 2016, to March 31st, 2024. The performance of the models are evaluated by root mean squared error (RMSE), mean squared error (MSE) and R-squared (R2). The findings of this study demonstrate that Simple Linear Regression is not well-suited for time series data analysis, whereas ARIMA presents distinct advantages in forecasting stock prices.
+Predicting stock market movements is a significant challenge for traders, investors, and businesses, yet it can be highly profitable with precise forecasts. Achieving accurate predictions is crucial, particularly given the volatile, nonlinear, and unpredictable nature of the stock market. In this paper we are predicting stock prices of Apple using two machine learning algorithms - Linear Regression and Autoregressive Integrated Moving Average (ARIMA) by comparing their forecasting performances. The data is collected from Yahoo Finance and Google Trends and the analysis spans a period of eight years, from April 1st, 2016, to March 31st, 2024. The performance of the models are evaluated by root mean squared error (RMSE), mean squared error (MSE) and R-squared (R2). The findings of this study demonstrate that Simple Linear Regression is not well-suited for time series data analysis, whereas ARIMA presents distinct advantages in forecasting stock prices.
 
 \end{abstract}
 
 \begin{IEEEkeywords}
-Forecasting, Stock Prices, Machine Learning, SLR, ARIMA. 
+Forecasting, Stock Prices, Machine Learning, Autoregression, Linear Regression. 
 \end{IEEEkeywords}
 
 \section{Introduction}
@@ -43,34 +45,80 @@ A stock signifies an investment representing ownership in a company. The total o
 Utilizing machine learning algorithms for stock price prediction aids in uncovering the potential future value of company stocks and other financial assets traded on various exchanges. The fundamental objective of predicting stock prices is to attain substantial profits. However, forecasting the performance of the stock market is a formidable challenge. Several factors come into play in this prediction process, encompassing both tangible and psychological elements, rational and irrational behaviors, among others.
 The interaction of these diverse factors renders share prices highly dynamic and volatile, thereby posing significant hurdles to achieving precise predictions with a high degree of accuracy.
 
-Linear Regression:
+
+\subsection*{Linear Regression:}
 
 Linear regression is a statistical method used to model the relationship between a dependent variable and one or more independent variables by fitting a linear equation to observed data. In essence, it seeks to determine the best-fitting straight line through the data points. The goal is to find the coefficients of the linear equation that minimize the difference between the observed and predicted values of the dependent variable. Linear regression is widely employed for prediction and forecasting tasks, as well as for understanding the relationships between variables in a dataset.
 
-Y = β0 + β1x1 + β2​x2 ​ +...+ βn​xn +  ε
-y represents the dependent variable, x1, x2, ..., xn represents the independent variables, β0,β1,β2,...,βn represents the coefficients associated with each independent variable, and n is the number of independent variables. ε represents the error term, which captures the difference between the observed and predicted values of the dependent variable.
+$Y = \beta_0+\beta_1 x_1 + \beta_2 x_2 + \ldots+\beta_n x_n + \epsilon$
+y represents the dependent variable, x1, x2, ..., xn represents the independent variables, $\beta_0,\beta_1,\beta_2,\ldots,\beta_n$ represents the coefficients associated with each independent variable, and n is the number of independent variables. $\epsilon$represents the error term, which captures the difference between the observed and predicted values of the dependent variable.
 
 
-ARIMA:
-ARIMA, or AutoRegressive Integrated Moving Average, is a forecasting algorithm grounded in the principle that historical values of a time series can offer insights into future trends. Belonging to a class of models renowned for elucidating time series behavior through its own past data, including lags and lagged forecast errors, ARIMA excels in predicting forthcoming values. It is particularly applicable to time series datasets exhibiting discernible patterns rather than random noise. ARIMA entails three key parameters: p, d, and q. The parameter p denotes the number of autoregressive terms or lag observations, providing lagged data points. d signifies the degree of differencing, indicating the number of times lagged indicators have been subtracted to achieve data stationarity. q represents the number of forecast errors in the model, akin to the size of the moving average window. These parameters, integers by nature, are pivotal in defining the ARIMA model's functionality and can take a value of 0, implying their exclusion from the model. Consequently, ARIMA can transform into various models: ARMA (p=0, d=0), AR (p>0, d=0, q=0), and MA (p=0, d=0, q>0). ARIMA models are denoted by their parameter combinations, such as ARIMA(1, 0, 0) for the first-order autoregressive model or ARIMA(0, 1, 0) for the random walk model. Once the parameters are set, the ARIMA model estimates coefficients α and θ, utilizing past data points to forecast future values.
+\subsection*{ARIMA:}
+
+ARIMA, or AutoRegressive Integrated Moving Average, is a forecasting algorithm grounded in the principle that historical values of a time series can offer insights into future trends. Belonging to a class of models renowned for elucidating time series behavior through its own past data, including lags and lagged forecast errors, ARIMA excels in predicting forthcoming values. It is particularly applicable to time series datasets exhibiting discernible patterns rather than random noise. ARIMA entails three key parameters: p, d, and q. The parameter p denotes the number of autoregressive terms or lag observations, providing lagged data points. d signifies the degree of differencing, indicating the number of times lagged indicators have been subtracted to achieve data stationarity. q represents the number of forecast errors in the model, akin to the size of the moving average window. These parameters, integers by nature, are pivotal in defining the ARIMA model's functionality and can take a value of 0, implying their exclusion from the model. Consequently, ARIMA can transform into various models: ARMA (p=0, d=0), AR (p$>$0, d=0, q=0), and MA (p=0, d=0, q$>$0). ARIMA models are denoted by their parameter combinations, such as ARIMA(1, 0, 0) for the first-order autoregressive model or ARIMA(0, 1, 0) for the random walk model. Once the parameters are set, the ARIMA model estimates coefficients $\alpha$ and $\theta$, utilizing past data points to forecast future values.
+
+\section{Literature review}
+
+
 
 \section{Data}
-Data used for this paper is taken from Yahoo finance S&P 500. As we are only focused on Apple stocks data, we got the data only for Apple which ranges from April 1st, 2016 till March 31st, 2024. It consists of 6 independent variables and one response variable. The adjusted close price is a variable which we are using both as an independent and dependent variable. Table 1 shows statistics of the dataset that is used for training and testing.
+Data used for this paper is taken from Yahoo finance and Google Trend data. As we are only focused on Apple stocks data, we got the data only for Apple which ranges from April 1st, 2016 till March 31st, 2024. It consists of 6 independent variables and one response variable. The adjusted close price is a variable which we are using both as an independent and dependent variable. Table 1 shows statistics of the dataset that is used for training and testing.
 
-
-
-\begin{table}
+\begin{table}[htbp]
     \centering
-    \begin{tabular}{ccccc}
-         &  &  &  & \\
-         &  &  &  & \\
+    \caption{Dataset Splitting}
+    \begin{tabular}{@{}rlllll@{}}
+        \toprule
+         && \textbf{Dataset} & \textbf{Training} & \textbf{Validation} & \textbf{Testing} \\
+        \midrule
+        \textbf{Time Interval} &(Start) & 04-01-2016 & 04-01-2016 & 01-02-2021 & 07-01-2023\\
+        &(End)& 03-31-2024 & 01-01-2021 & 06-30-2023 & 03-31-2024\\
+  
+        \bottomrule
     \end{tabular}
-    \caption{Caption}
-    \label{tab:my_label}
+    \label{tab:GFS}
 \end{table}
 
 
+
+
 \section{Method}
+
+\subsection*{Univariate time series regression}
+
+We use $y_{t}$ to represent the adjusted close price of Apple stock.
+$y^{'}_{t} = \ln(y_{t})-\ln(y_{t-1}) = \ln(\frac{y_{t}}{y_{t-1}})$ represent the first difference of log of $y_{t}$.
+
+
+Our AR($p$) model is defined as follows:
+
+\[
+y^{'}_{t} = c + \phi_{1}y^{'}_{t-1} + \phi_{2}y^{'}_{t-2} + \dots + \phi_{p}y^{'}_{t-p} + \varepsilon_{t},
+\]
+
+The predicted value for $y_t$ is calculated as follows:
+
+\[
+\hat{y}_t = \exp\{c + \phi_{1}y^{'}_{t-1} + \phi_{2}y^{'}_{t-2} + \dots + \phi_{p}y^{'}_{t-p}\}\cdot y_{t-1}
+\]
+
+\subsection*{Multivariate time series regression}
+
+
+
+From Google trends, we get the interest over time of keywords ``Apple Watch", ``MacBook", ``AirPods", ``iPad", ``iPhone", represented by variable $y_{1,t},y_{2,t},y_{3,t},y_{4,t},y_{5,t}$ respectively. Also, we take the volume of the apple stock represented by variable $y_{6,t}$, the first difference of the adjusted close price of Apple stock as $y_{7,t}$ (which is $y^{'}_t$ in the univariate scenario). $\mathbf{y}_t = (y_{1,t},y_{2,t},y_{3,t},y_{4,t},y_{5,t},y_{6,t},y_{7,t})$.
+
+We define our Vector Auto-Regressive(VAR) model as follows:
+
+\[
+\mathbf{y}_t = A_1\mathbf{y}_{t-1}+\ldots+A_p\mathbf{y}_{t-p}+\mathbf{u}_t
+\]
+
+where $A_i$ are $(7\times7)$ coefficient matrices for $i=1,\ldots,p$ and $\mathbf{u}_t$ is a 7-dimensional process with E($\mathbf{u}_t$) $= \mathbf{0}$ and time invariant positive definite covariance matrix E(${\mathbf{u}_t}{\mathbf{u}_t}^T$)$=\Sigma_\mathbf{u}$(white noise).
+
+
+
 \section{Results}
 \section{Discussion and/or Conclusion}
 
@@ -212,9 +260,10 @@ For papers published in translation journals, please give the English
 citation first, followed by the original foreign-language citation \cite{b6}.
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
+\bibitem{b1} Selene Yue Xu. (n.d.). https://www.econ.berkeley.edu/sites/default/files/Selene%20Yue%20Xu.pdf
+\bibitem{b2} Khanderwal, S., & Mohanty, D. (2021). Stock Price Prediction Using ARIMA Model. International Journal of Marketing & Human Resource Research, 2(2), 98-107. Retrieved from http://www.journal.jis-institute.org/index.php/ijmhrr/article/view/235
+\bibitem{b3} Vijh, M., Chandola, D., Tikkiwal, V. A., & Kumar, A. (2020). Stock Closing Price Prediction using Machine Learning Techniques. Procedia Computer Science, 167(167), 599–606. https://doi.org/10.1016/j.procs.2020.03.326
+
 \bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
 \bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
 \bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
