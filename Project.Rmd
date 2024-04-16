@@ -23,7 +23,7 @@ head(apple)
 # Plot the Price vs Date
 
 ```{r}
-pdf("pic/Price_vs_Date.pdf")
+pdf("pic/Price_vs_Date.pdf",height=3.5,width=7)
 plot(apple$AdjClosed, type="l", xlab="Date index", ylab="Adjusted close price of Apple", main="Price vs Date")
 dev.off()
 ```
@@ -32,7 +32,7 @@ dev.off()
 # Check the autocorrelation
 
 ```{r}
-pdf("pic/ACF_AdjClosed.pdf")
+pdf("pic/ACF_AdjClosed.pdf",height=3.5,width=7)
 acf(apple$AdjClosed, main=expression(paste("ACF of ", Y[t], " (Adjusted Close Price of Apple(AAPL))", sep="")))
 dev.off()
 ```
@@ -43,7 +43,7 @@ We can see that it is highly correlated.
 
 ```{r}
 # -1 here to remove the first NA in the difference vector
-pdf("pic/ACF_dAdjClosed.pdf")
+pdf("pic/ACF_dAdjClosed.pdf",height=3.5,width=7)
 acf(difference(apple$AdjClosed)[-1], main=expression(paste("ACF of ", Y[t]^"'", , sep="")))
 dev.off()
 ```
