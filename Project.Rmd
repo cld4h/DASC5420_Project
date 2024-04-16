@@ -1,0 +1,216 @@
+---
+title: "DASC5420 Project"
+---
+
+```{r}
+library(quantmod) # to download stock data in R
+library(dplyr) # dplyr
+library(tsibble) # for difference function
+# Download data from yahoo Finance!
+start.date = '2016-04-01' # starting date of stock
+end.date = '2024-03-31' # ending date of stock
+# Download the selected stocks from Yahoo finance using `quantmod` package
+getSymbols("AAPL", src = "yahoo", from = start.date, to = end.date)
+```
+
+```{r}
+# Create date variable
+apple_stock <- zoo::fortify.zoo(AAPL)
+# Rename date variable
+apple_stock <- apple_stock %>% rename(c("Date" = "Index", "AdjClosed" = "AAPL.Adjusted", "Volume" = "AAPL.Volume"))
+apple <- subset(apple_stock, select = c("Date", "AdjClosed", "Volume"))
+head(apple)
+```
+
+```{r}
+acf(apple$AdjClosed)
+# -1 here to remove the first NA in the difference vector
+acf(difference(apple$AdjClosed)[-1])
+plot(apple$AdjClosed, type="l")
+```
+
+```{r}
+Gtrends <- read.csv("Gtrends.csv")
+merged<-merge(apple, Gtrends[-7], by.x = "Date", by.y = "date", all=FALSE)
+tail(Gtrends)
+tail(apple)
+tail(merged)
+```
+
+```{r}
+write.csv(merged, "merged.csv")
+```
+
+```{r}
+dclosed <- difference(log(merged$AdjClosed))[-1]
+#X <- as.matrix(cbind(dclosed,merged$Apple.Watch[-1]))
+X <- as.matrix(dclosed)
+YX <- cbind(as.matrix(c(dclosed[-1],0)),X)[-2011,]
+mod<-lm(YX[,1]~YX[,2])
+arima(X,order = c(9,0,0))
+```
+
+
+This code will download historical stock prices for all S&P 500 companies, calculate daily returns, and then perform a simple linear regression using one stock's returns as the dependent variable and another stock's returns as the independent variable. 
+
+Step 1: Install and load necessary packages
+```{r}
+#install.packages("quantmod")
+library(quantmod)
+```
+
+Step 2: Download S&P 500 stock data
+```{r}
+# Define the ticker symbols of the S&P 500 stocks
+symbols <- read.csv("")
+
+# Extract ticker symbols
+tickers <- symbols$symbol
+
+# Define the time period
+start_date <- "2020-01-01"
+end_date <- "2024-01-01"
+
+# Download data
+getSymbols(tickers, from = start_date, to = end_date, src = "yahoo", auto.assign = TRUE)
+```
+
+Step 3: Prepare the data for regression
+```{r}
+# Let's consider the adjusted closing prices for all stocks
+sp500_prices <- do.call(merge, lapply(tickers, function(x) Cl(get(x))))
+
+# Remove any NA values
+sp500_prices <- na.omit(sp500_prices)
+
+# Calculate returns
+sp500_returns <- Return.calculate(sp500_prices)
+
+# Choose a dependent variable and independent variables for the regression
+# For example, let's say we choose one stock as the dependent variable and another stock as the independent variable
+dependent_stock <- "AAPL"  # Apple Inc.
+independent_stock <- "MSFT"  # Microsoft Corporation
+
+dependent_returns <- sp500_returns[, dependent_stock]
+independent_returns <- sp500_returns[, independent_stock]
+
+# Combine returns into a data frame
+data <- data.frame(dependent_returns, independent_returns)
+```
+
+Step 4: Perform time series regression
+```{r}
+# Perform linear regression
+regression_model <- lm(dependent_returns ~ independent_returns, data = data)
+
+# Summary of the regression model
+summary(regression_model)
+```
+
+```{r}
+plot(trend$aapl,type='l')
+plot(price$Close,type='l',xlab='Time',ylab='Close
+Prices',main='Weekly Close Prices of aapl')
+d1=diff(price$Close)
+logd1=diff(log(price$Close))
+sd1=diff(sqrt(price$Close))
+par(mfrow=c(3,1))
+plot(d1,type='l',xlab='Time',ylab='Difference',main='First Degree
+Differencing on Raw Data')
+plot(logd1,type='l',xlab='Time',ylab='Difference',main='First
+Degree Differencing on Logged Data')
+plot(sd1,type='l',xlab='Time',ylab='Difference',main='First
+Degree Differencing on Square-root Data')
+par(mfrow=c(2,1))
+acf(sd1,main='Autocorrelation Function of the First Differences')
+pacf(sd1,main='Partial Autocorrelation Function of the First
+Differences')
+sd2=diff(sd1)
+par(mfrow=c(2,1))
+acf(sd2,main='Autocorrelation Function of the Second
+Differences')
+pacf(sd2,main='Partial Autocorrelation Function of the Second
+Differences')
+arima(sqrt(price$Close),order=c(0,2,1))
+inf2=info[1:(length(info)-1)]
+d=data.frame(d1,inf2)
+mod=lm(d1~inf2,data=d)
+summary(mod)
+plot(inf2,d1,xlab='News Values',ylab='Weekly Changes in Stock
+Prices',main='Changes in Stock Prices VS News with Regression
+Line')
+abline(a=summary(mod)$coefficients[1],b=summary(mod)$coefficients
+[2])
+jack=rstudent(mod)
+plot(jack, ylab='jacknife residuals',main='jacknife residuals')
+q=abs(qt(.1/(260*2),(260-1-2)))
+jack[abs(jack)==max(abs(jack))]
+which(abs(jack)>q)
+d3=d[-which(abs(jack)>q),]
+mod3=lm(d1~inf2,data=d3)
+summary(mod3)
+plot(d3$inf2,d3$d1,xlab='News Values',ylab='Weekly Changes in
+Stock Prices',main='Changes in Stock Prices VS News (without
+outliers)')
+abline(a=summary(mod3)$coefficients[1],b=summary(mod3)$coefficien
+ts[2])
+influence(mod)$h
+dim(d)
+which(influence(mod)$h > 2*2/260 )
+influence(mod)$h[which(influence(mod)$h > 2*2/260 )]
+d2=d[-which(influence(mod)$h > 2*2/260 ),]
+plot(d2$inf2,d2$d1,xlab='News Values',ylab='Weekly Changes in
+Stock Prices',main='Changes in Stock Prices VS News (without
+influential points)')
+abline(a=summary(mod2)$coefficients[1],b=summary(mod2)$coefficien
+ts[2])
+mod2=lm(d1~inf2,data=d2)
+summary(mod2)
+pdum=(inf2>0)*1
+ndum=(inf2<0)*1
+m=lm(d1~pdum+ndum-1)
+summary(m)
+x=d[inf2>0,]
+mean(x$d1)
+min(inf2)
+max(inf2)
+dum1=(inf2<(-2))*1
+dum2=(inf2>=(-2)&inf2<(-1.5))*1
+dum3=(inf2>=(-1.5)&inf2<(-1))*1
+dum4=(inf2>=(-1)&inf2<(-0.5))*1
+dum5=(inf2>=(-0.5)&inf2<(0))*1
+dum6=(inf2>=(0)&inf2<(0.5))*1
+dum7=(inf2>=(0.5)&inf2<(1))*1
+dum8=(inf2>=(1)&inf2<(1.5))*1
+dum9=(inf2>=(1.5))*1
+m2=lm(d1~dum1+dum2+dum3+dum4+dum5+dum6+dum7+dum8+dum9-1)
+summary(m2)
+#the following shows how to create the news vector
+news=read.csv("/Users/selenexu/Desktop/Econ
+Honor/event.csv",header=TRUE)
+news$Date=as.Date(news$Date,"%m/%d/%Y")
+date=seq(from=as.Date("2007-08-29"), to=as.Date("2012-09-15"),
+by=1)
+length(date)
+match=match(news$Date, date)
+fac=1:length(date)
+for (i in fac) {if (i %in% match) {fac[i]=news[match(i,match),3]}
+else {fac[i]=0}}
+mul=1:length(fac)
+for (i in mul) {mul[i]=sum(exp(-((i-1):0)*1/7)*fac[1:i])}
+plot(mul,type='l')
+d=date[5:length(date)]
+da=d[seq(1,length(d),7)]
+tail(da)
+weeklydate=da[1:(length(da)-2)]
+m=mul[5:length(mul)]
+m1=m[seq(1,length(m),7)]
+m2=m1[1:(length(m1)-2)]
+trend=read.csv("/Users/selenexu/Desktop/Econ Honor/aapl
+trends.csv",header=TRUE)
+infor=trend$aapl[5:length(trend$aapl)]
+info=infor*m2
+plot(info,type='l', xlab='Time',ylab='News Values',main='Values
+of News/Events over Time')
+```
+

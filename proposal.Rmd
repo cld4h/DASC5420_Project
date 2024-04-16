@@ -1,0 +1,32 @@
+---
+title: "DASC5420 Final project proposal"
+---
+
+## Team member
+
+|Name|ID|
+|---|---|
+|Hao Xu|T00732492|
+|Waqar Ul Mulk|T00729986|
+
+## Dataset
+
+[Yahoo Finance data](https://finance.yahoo.com/ )
+
+## Objectives
+
+* Download and clean the dataset
+* Create a $i$-day lag variable, $i$ from $1$ to $N$, representing the stock price $i$-day ago.
+
+
+|        | ... | 2024-03-25 (lag-2) | 2024-03-26 (lag-1) | 2024-03-27      |
+|--------|-----|--------------------|--------------------|-----------------|
+| Apple  |     | 170.85             | 169.71             | to be predicted |
+| Amazon |     | 178.01             | 178.30             | to be predicted |
+| ...    |     |                    |                    |                 |
+
+
+* Decide the $N$
+* Do a linear regression to predict the price.
+* Do a variable selection using AIC, BIC, and $R^2$, compare the performance of those methods.
+* Kmeans clustering for different stocks to group the similar stocks.

@@ -1,4 +1,4 @@
-
+<!--
 # Acronyms
 
 | name | meaning                 |
@@ -47,3 +47,13 @@ The Initial Spread Index (ISI) is a numeric rating of the expected rate of fire 
 
 - [ ] Solve a regression problem
 - [ ] Address the issue of positive skewness of the data
+-->
+
+# Machine Learning on stock price prediction
+
+We take Apple (AAPL) as an example, comparing these three different models:
+
+* AR (AutoRegressive) model on the first difference of adjusted close price with Backshift = 1
+* AR model on the first difference of adjusted close price with Backshift = n, evaluating the performance vs n.
+* AR model combined with stock volume and google trends keyword of `['Apple Watch', 'MacBook', 'AirPods', 'iPad', 'iPhone']`
+
