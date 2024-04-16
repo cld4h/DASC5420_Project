@@ -44,7 +44,7 @@ We can see that it is highly correlated.
 ```{r}
 # -1 here to remove the first NA in the difference vector
 pdf("pic/ACF_dAdjClosed.pdf",height=3.5,width=7)
-acf(difference(apple$AdjClosed)[-1], main=expression(paste("ACF of ", Y[t]^"'", , sep="")))
+acf(difference(apple$AdjClosed)[-1], main=expression(paste("ACF of ", Y[t]^"'", sep="")))
 dev.off()
 ```
 
@@ -58,6 +58,20 @@ tail(merged)
 
 ```{r}
 write.csv(merged, "merged.csv")
+```
+
+```{r}
+pdf("pic/Sqrt_AdjClosed.pdf",height=3.5,width=7)
+par(mar = c(4, 5, 2, 4))
+plot(difference(sqrt(merged$AdjClosed))[-1], xlab="Date index", ylab=expression(paste(sqrt(Y[t])-sqrt(Y[t-1]), sep="")), type="l", main=expression(paste("Changes in ", sqrt(Y[t]), " vs Date", sep="")))
+dev.off()
+```
+
+```{r}
+pdf("pic/log_AdjClosed.pdf",height=3.5,width=7)
+par(mar = c(4, 5, 2, 4))
+plot(difference(log(merged$AdjClosed))[-1], xlab="Date index", ylab=expression(paste(ln(Y[t])-ln(Y[t-1]), sep="")), type="l", main=expression(paste("Changes in ", ln(Y[t]), " vs Date", sep="")))
+dev.off()
 ```
 
 ```{r}
