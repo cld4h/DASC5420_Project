@@ -2,18 +2,17 @@
 title: "DASC5420 Project"
 ---
 
+# First, load the library and download the data
+
 ```{r}
 library(quantmod) # to download stock data in R
 library(dplyr) # dplyr
 library(tsibble) # for difference function
 # Download data from yahoo Finance!
-start.date = '2016-04-01' # starting date of stock
-end.date = '2024-03-31' # ending date of stock
+START.DATE = '2016-04-01' # starting date of stock
+END.DATE = '2024-03-31' # ending date of stock
 # Download the selected stocks from Yahoo finance using `quantmod` package
-getSymbols("AAPL", src = "yahoo", from = start.date, to = end.date)
-```
-
-```{r}
+getSymbols("AAPL", src = "yahoo", from = START.DATE, to = END.DATE)
 # Create date variable
 apple_stock <- zoo::fortify.zoo(AAPL)
 # Rename date variable
@@ -21,16 +20,36 @@ apple_stock <- apple_stock %>% rename(c("Date" = "Index", "AdjClosed" = "AAPL.Ad
 apple <- subset(apple_stock, select = c("Date", "AdjClosed", "Volume"))
 head(apple)
 ```
+# Plot the Price vs Date
 
 ```{r}
-acf(apple$AdjClosed)
+pdf("pic/Price_vs_Date.pdf")
+plot(apple$AdjClosed, type="l", xlab="Date index", ylab="Adjusted close price of Apple", main="Price vs Date")
+dev.off()
+```
+
+
+# Check the autocorrelation
+
+```{r}
+pdf("pic/ACF_AdjClosed.pdf")
+acf(apple$AdjClosed, main=expression(paste("ACF of ", Y[t], " (Adjusted Close Price of Apple(AAPL))", sep="")))
+dev.off()
+```
+
+We can see that it is highly correlated.
+
+# Calculate the first difference
+
+```{r}
 # -1 here to remove the first NA in the difference vector
-acf(difference(apple$AdjClosed)[-1])
-plot(apple$AdjClosed, type="l")
+pdf("pic/ACF_dAdjClosed.pdf")
+acf(difference(apple$AdjClosed)[-1], main=expression(paste("ACF of ", Y[t]^"'", , sep="")))
+dev.off()
 ```
 
 ```{r}
-Gtrends <- read.csv("Gtrends.csv")
+Gtrends <- read.csv("data_src/Gtrends.csv")
 merged<-merge(apple, Gtrends[-7], by.x = "Date", by.y = "date", all=FALSE)
 tail(Gtrends)
 tail(apple)
