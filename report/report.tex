@@ -11,16 +11,16 @@
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
 \begin{document}
 
-\title{Machine learning approach for wildfire burned area prediction\\
+\title{Predicting Stock Market Volatility with Time Series Machine Learning Models\\
 }
 
-\author{\IEEEauthorblockN{1\textsuperscript{st} Given Name Surname}
+\author{\IEEEauthorblockN{1\textsuperscript{st} Xu Hao}
 \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
 \textit{name of organization (of Aff.)}\\
 City, Country \\
 email address or ORCID}
 \and
-\IEEEauthorblockN{2\textsuperscript{nd} Given Name Surname}
+\IEEEauthorblockN{2\textsuperscript{nd} Mulk Waqar Ul}
 \IEEEauthorblockA{\textit{dept. name of organization (of Aff.)} \\
 \textit{name of organization (of Aff.)}\\
 City, Country \\
@@ -30,15 +30,46 @@ email address or ORCID}
 \maketitle
 
 \begin{abstract}
-We are trying to construct a machine learning model to predict the burned area of forest fires based on meteorological conditions reported by local sensors (e.g. temperature, wind).
+Predicting stock market movements is a significant challenge for traders, investors, and businesses, yet it can be highly profitable with precise forecasts. Achieving accurate predictions is crucial, particularly given the volatile, nonlinear, and unpredictable nature of the stock market. In this paper we are predicting stock prices of Apple using two machine learning algorithms - Linear Regression and Autoregressive Integrated Moving Average (ARIMA) by comparing their forecasting performances. The analysis spans a period of eight years, from April 1st, 2016, to March 31st, 2024. The performance of the models are evaluated by root mean squared error (RMSE), mean squared error (MSE) and R-squared (R2). The findings of this study demonstrate that Simple Linear Regression is not well-suited for time series data analysis, whereas ARIMA presents distinct advantages in forecasting stock prices.
+
 \end{abstract}
 
 \begin{IEEEkeywords}
-Regression, Wildfire, Landscape simulation, Burn probability, fire weather, fire grouth rate
+Forecasting, Stock Prices, Machine Learning, SLR, ARIMA. 
 \end{IEEEkeywords}
 
 \section{Introduction}
+A stock signifies an investment representing ownership in a company. The total ownership of a company is divided into shares, with each share representing an equal portion of the business. The stock market functions as a marketplace where individuals can purchase shares of stock. Analogous to various other markets like grocery stores or farmers’ markets, where multiple vendors gather to sell their products, the stock market serves as a central hub for trading securities. Similarly to a farmers’ market where different farmers offer their produce, customers have the opportunity to explore various investment options and make purchases according to their preferences. In essence, the stock market operates similarly to these markets, acting as a centralized venue where buyers and sellers converge to trade stocks and other investment instruments, including mutual funds, which pool together multiple stocks. However, unlike a single market, the stock market comprises several smaller markets known as stock exchanges.
+Utilizing machine learning algorithms for stock price prediction aids in uncovering the potential future value of company stocks and other financial assets traded on various exchanges. The fundamental objective of predicting stock prices is to attain substantial profits. However, forecasting the performance of the stock market is a formidable challenge. Several factors come into play in this prediction process, encompassing both tangible and psychological elements, rational and irrational behaviors, among others.
+The interaction of these diverse factors renders share prices highly dynamic and volatile, thereby posing significant hurdles to achieving precise predictions with a high degree of accuracy.
+
+Linear Regression:
+
+Linear regression is a statistical method used to model the relationship between a dependent variable and one or more independent variables by fitting a linear equation to observed data. In essence, it seeks to determine the best-fitting straight line through the data points. The goal is to find the coefficients of the linear equation that minimize the difference between the observed and predicted values of the dependent variable. Linear regression is widely employed for prediction and forecasting tasks, as well as for understanding the relationships between variables in a dataset.
+
+Y = β0 + β1x1 + β2​x2 ​ +...+ βn​xn +  ε
+y represents the dependent variable, x1, x2, ..., xn represents the independent variables, β0,β1,β2,...,βn represents the coefficients associated with each independent variable, and n is the number of independent variables. ε represents the error term, which captures the difference between the observed and predicted values of the dependent variable.
+
+
+ARIMA:
+ARIMA, or AutoRegressive Integrated Moving Average, is a forecasting algorithm grounded in the principle that historical values of a time series can offer insights into future trends. Belonging to a class of models renowned for elucidating time series behavior through its own past data, including lags and lagged forecast errors, ARIMA excels in predicting forthcoming values. It is particularly applicable to time series datasets exhibiting discernible patterns rather than random noise. ARIMA entails three key parameters: p, d, and q. The parameter p denotes the number of autoregressive terms or lag observations, providing lagged data points. d signifies the degree of differencing, indicating the number of times lagged indicators have been subtracted to achieve data stationarity. q represents the number of forecast errors in the model, akin to the size of the moving average window. These parameters, integers by nature, are pivotal in defining the ARIMA model's functionality and can take a value of 0, implying their exclusion from the model. Consequently, ARIMA can transform into various models: ARMA (p=0, d=0), AR (p>0, d=0, q=0), and MA (p=0, d=0, q>0). ARIMA models are denoted by their parameter combinations, such as ARIMA(1, 0, 0) for the first-order autoregressive model or ARIMA(0, 1, 0) for the random walk model. Once the parameters are set, the ARIMA model estimates coefficients α and θ, utilizing past data points to forecast future values.
+
 \section{Data}
+Data used for this paper is taken from Yahoo finance S&P 500. As we are only focused on Apple stocks data, we got the data only for Apple which ranges from April 1st, 2016 till March 31st, 2024. It consists of 6 independent variables and one response variable. The adjusted close price is a variable which we are using both as an independent and dependent variable. Table 1 shows statistics of the dataset that is used for training and testing.
+
+
+
+\begin{table}
+    \centering
+    \begin{tabular}{ccccc}
+         &  &  &  & \\
+         &  &  &  & \\
+    \end{tabular}
+    \caption{Caption}
+    \label{tab:my_label}
+\end{table}
+
+
 \section{Method}
 \section{Results}
 \section{Discussion and/or Conclusion}
