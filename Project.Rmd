@@ -1,6 +1,8 @@
 ---
-title: "DASC5420 Project"
+title: "DASC5420 Project: Predicting stock market price"
+output: beamer_presentation
 ---
+
 
 # First, load the library and download the data
 
@@ -11,27 +13,51 @@ library(tsibble) # for difference function
 # Download data from yahoo Finance!
 START.DATE = '2016-04-01' # starting date of stock
 END.DATE = '2024-03-31' # ending date of stock
-# Download the selected stocks from Yahoo finance using `quantmod` package
-getSymbols("AAPL", src = "yahoo", from = START.DATE, to = END.DATE)
+# Download the selected stocks from Yahoo finance 
+# using `quantmod` package
+getSymbols("AAPL", src = "yahoo", 
+	   from = START.DATE, to = END.DATE)
+```
+
+# Prepare the data
+
+We are only selecting the adjusted close price `AdjColsed`
+and stock volume `Volume` as our predictor.
+
+```{r}
+# The `zoo::fortify.zoo` function is used to convert objects of class "zoo" to data frames. The "zoo" package in R provides a flexible and powerful framework for working with irregular time series data.
 # Create date variable
 apple_stock <- zoo::fortify.zoo(AAPL)
 # Rename date variable
 apple_stock <- apple_stock %>% rename(c("Date" = "Index", "AdjClosed" = "AAPL.Adjusted", "Volume" = "AAPL.Volume"))
 apple <- subset(apple_stock, select = c("Date", "AdjClosed", "Volume"))
-head(apple)
+knitr::kable(head(apple))
 ```
+
 # Plot the Price vs Date
 
-```{r}
+Plot the column `apple$AdjClosed` 
+
+```{r fig.width=7, fig.height=3.5}
+plot(apple$AdjClosed, type="l", xlab="Date index", 
+     ylab="Adjusted close price of Apple", 
+     main="Price vs Date")
+```
+```{r eval=FALSE, echo=FALSE}
 pdf("pic/Price_vs_Date.pdf",height=3.5,width=7)
 plot(apple$AdjClosed, type="l", xlab="Date index", ylab="Adjusted close price of Apple", main="Price vs Date")
 dev.off()
 ```
 
 
-# Check the autocorrelation
+# Check autocorrelation
 
-```{r}
+```{r fig.width=7, fig.height=3.5}
+acf(apple$AdjClosed, main=expression(paste("ACF of ", 
+    Y[t], " (Adjusted Close Price of Apple(AAPL))", sep="")))
+```
+
+```{r eval=FALSE, echo=FALSE}
 pdf("pic/ACF_AdjClosed.pdf",height=3.5,width=7)
 acf(apple$AdjClosed, main=expression(paste("ACF of ", Y[t], " (Adjusted Close Price of Apple(AAPL))", sep="")))
 dev.off()
@@ -41,24 +67,63 @@ We can see that it is highly correlated.
 
 # Calculate the first difference
 
-```{r}
-# -1 here to remove the first NA in the difference vector
+```{r fig.width=7, fig.height=3.5}
+acf(difference(apple$AdjClosed)[-1], 
+    main=expression(paste("ACF of ", 
+    Y[t]^"'", sep="")))
+```
+```{r eval=FALSE, echo=FALSE}
 pdf("pic/ACF_dAdjClosed.pdf",height=3.5,width=7)
+# -1 here to remove the first NA in the difference vector
 acf(difference(apple$AdjClosed)[-1], main=expression(paste("ACF of ", Y[t]^"'", sep="")))
 dev.off()
 ```
+There is little autocorrelation after we take the first difference
+
+# Google trends keywords
+
+We get the worldwide interest over time from google trends using the following python API.
+
+```{py eval=FALSE}
+#!pip install pytrends
+
+from pytrends.request import TrendReq
+pytrends = TrendReq(hl='en-US', tz=240, timeout=(10,25))
+# tz, timezone should be EDT
+
+kw_list = ['Apple Watch', 'MacBook', 'AirPods', 'iPad', 'iPhone']
+# half-year interval gives the daily trends
+tf_list = ['2016-04-01 2016-09-30' ,'2016-10-01 2017-03-31' ,'2017-04-01 2017-09-30' ,'2017-10-01 2018-03-31' ,'2018-04-01 2018-09-30' ,'2018-10-01 2019-03-31' ,'2019-04-01 2019-09-30' ,'2019-10-01 2020-03-31' ,'2020-04-01 2020-09-30' ,'2020-10-01 2021-03-31' ,'2021-04-01 2021-09-30' ,'2021-10-01 2022-03-31' ,'2022-04-01 2022-09-30' ,'2022-10-01 2023-03-31' ,'2023-04-01 2023-09-30' ,'2023-10-01 2024-03-31']
+
+trends_list = list()
+for t in tf_list:
+  pytrends.build_payload(kw_list, timeframe=t)
+  trends_list.append(pytrends.interest_over_time())
+combined_df = pd.concat(trends_list, axis=0)
+combined_df.to_csv("data_src/Gtrends.csv")
+```
+
+# Google trends keywords
 
 ```{r}
-Gtrends <- read.csv("data_src/Gtrends.csv")
-merged<-merge(apple, Gtrends[-7], by.x = "Date", by.y = "date", all=FALSE)
-tail(Gtrends)
-tail(apple)
-tail(merged)
+Gtrends <- read.csv("data_src/Gtrends.csv")[-7]
+knitr::kable(head(Gtrends))
+```
+
+# Merge the data
+
+```{r}
+# Gtrends has 7th column "is Partial" which is not related.
+merged<-merge(apple, Gtrends, by.x = "Date", by.y = "date", all=FALSE)
+head(apple)
+head(merged)
 ```
 
 ```{r}
 write.csv(merged, "merged.csv")
 ```
+
+Plot the graphs of $\sqrt{y_t}-\sqrt{y_{t-1}}$
 
 ```{r}
 pdf("pic/Sqrt_AdjClosed.pdf",height=3.5,width=7)
@@ -75,72 +140,212 @@ dev.off()
 ```
 
 ```{r}
-dclosed <- difference(log(merged$AdjClosed))[-1]
-#X <- as.matrix(cbind(dclosed,merged$Apple.Watch[-1]))
-X <- as.matrix(dclosed)
-YX <- cbind(as.matrix(c(dclosed[-1],0)),X)[-2011,]
-mod<-lm(YX[,1]~YX[,2])
-arima(X,order = c(9,0,0))
-```
+dy <- difference(log(merged$AdjClosed))[-1]
+Y <- as.matrix(dy)
+Y <- cbind(Y, merged$Volume[-1])
+Y <- cbind(Y, merged$Apple.Watch[-1])
+Y <- cbind(Y, merged$MacBook[-1])
+Y <- cbind(Y, merged$AirPods[-1])
+Y <- cbind(Y, merged$iPad[-1])
+Y <- cbind(Y, merged$iPhone[-1])
+#YX <- cbind(as.matrix(c(dy[-1],0)),X)[-2011,]
+#mod<-lm(YX[,1]~YX[,2])
+#arima(dy,order = c(9,0,0))
 
-
-This code will download historical stock prices for all S&P 500 companies, calculate daily returns, and then perform a simple linear regression using one stock's returns as the dependent variable and another stock's returns as the independent variable. 
-
-Step 1: Install and load necessary packages
-```{r}
-#install.packages("quantmod")
-library(quantmod)
-```
-
-Step 2: Download S&P 500 stock data
-```{r}
-# Define the ticker symbols of the S&P 500 stocks
-symbols <- read.csv("")
-
-# Extract ticker symbols
-tickers <- symbols$symbol
-
-# Define the time period
-start_date <- "2020-01-01"
-end_date <- "2024-01-01"
-
-# Download data
-getSymbols(tickers, from = start_date, to = end_date, src = "yahoo", auto.assign = TRUE)
-```
-
-Step 3: Prepare the data for regression
-```{r}
-# Let's consider the adjusted closing prices for all stocks
-sp500_prices <- do.call(merge, lapply(tickers, function(x) Cl(get(x))))
-
-# Remove any NA values
-sp500_prices <- na.omit(sp500_prices)
-
-# Calculate returns
-sp500_returns <- Return.calculate(sp500_prices)
-
-# Choose a dependent variable and independent variables for the regression
-# For example, let's say we choose one stock as the dependent variable and another stock as the independent variable
-dependent_stock <- "AAPL"  # Apple Inc.
-independent_stock <- "MSFT"  # Microsoft Corporation
-
-dependent_returns <- sp500_returns[, dependent_stock]
-independent_returns <- sp500_returns[, independent_stock]
-
-# Combine returns into a data frame
-data <- data.frame(dependent_returns, independent_returns)
-```
-
-Step 4: Perform time series regression
-```{r}
-# Perform linear regression
-regression_model <- lm(dependent_returns ~ independent_returns, data = data)
-
-# Summary of the regression model
-summary(regression_model)
+mat <- as.matrix(dy)
+prep_mx <- function(p=1, mat, y){
+# prepare data for AR(p), 
+# p is the number of lag steps.
+# p is integer and p >= 1
+	nr <- nrow(mat)
+	result <- y[-c(1:p)]
+	for (i in 1:p){
+		result <- cbind(result, mat[c((p-i+1):((p-i+1+nr-p-1))),] )
+	}
+return(result)
+}
+result <- prep_mx(p=2,mat,mat)
+result <- prep_mx(p=3,Y,mat)
 ```
 
 ```{r}
+mat <- as.matrix(dy)
+UAR_Lag1 <- as.data.frame(prep_mx(p=1,mat,mat))
+# New column names
+new_names <- c("Yt", "Yt_Lag1")
+# Rename columns using a loop
+for (i in seq_along(new_names)) {
+  colnames(UAR_Lag1)[i] <- new_names[i]
+}
+lm(Yt~., data=UAR_Lag1)
+```
+
+```{r}
+mat <- as.matrix(dy)
+UAR_Lag2 <- as.data.frame(prep_mx(p=2,mat,mat))
+# New column names
+new_names <- c("Yt", "Yt_Lag1", "Yt_Lag2")
+# Rename columns using a loop
+for (i in seq_along(new_names)) {
+  colnames(UAR_Lag2)[i] <- new_names[i]
+}
+lm(Yt~., data=UAR_Lag2)
+```
+
+```{r}
+mat <- as.matrix(dy)
+UAR_Lag10 <- as.data.frame(prep_mx(p=10,mat,mat))
+# New column names
+p<-10
+new_names <- c("Yt")
+for (i in 1:p){
+	new_names <- c(new_names, sprintf("Yt_Lag%d",i))
+}
+# Rename columns using a loop
+for (i in seq_along(new_names)) {
+  colnames(UAR_Lag10)[i] <- new_names[i]
+}
+lm(Yt~., data=UAR_Lag10)
+```
+
+```{r}
+mat <- as.matrix(dy)
+MAR_Lag10 <- as.data.frame(prep_mx(p=10,Y,mat))
+# New column names
+p<-10
+new_names <- c("Yt")
+for (i in 1:p){
+	new_names <- c(new_names, sprintf("Yt_Lag%d",i))
+	new_names <- c(new_names, sprintf("Volume_Lag%d",i))
+	new_names <- c(new_names, sprintf("Apple.Watch_Lag%d",i))
+	new_names <- c(new_names, sprintf("MacBook_Lag%d",i))
+	new_names <- c(new_names, sprintf("AirPods_Lag%d",i))
+	new_names <- c(new_names, sprintf("iPad_Lag%d",i))
+	new_names <- c(new_names, sprintf("iPhone_Lag%d",i))
+}
+# Rename columns using a loop
+for (i in seq_along(new_names)) {
+  colnames(MAR_Lag10)[i] <- new_names[i]
+}
+lm(Yt~., data=MAR_Lag10)
+```
+
+```{r}
+a1<-arima(mat, order=c(3,0,0))
+```
+
+
+```{r}
+library(caret)
+
+# Assuming your data is stored in a matrix called 'data_matrix'
+# Assuming the first column is the response variable and the rest are predictor variables
+
+# Split data into predictors and response
+nrow(UAR_Lag2)
+response <- UAR_Lag2[c(1:1900), 1]
+predictors <- UAR_Lag2[c(1:1900), -1]
+#for one lag
+#predictors <- as.matrix(SLR_Lag1[c(1:1900), -1])
+#colnames(predictors)[1] <- "Yt_Lag1"
+
+# Set up the control for cross-validation
+control <- trainControl(method = "cv",  # Cross-validation method
+                        number = 10,     # Number of folds
+                        verboseIter = TRUE)  # Print progress during training
+
+# Train the linear regression model using cross-validation
+lm_model <- train(x=predictors, y=response, 
+                  method = "lm",  # Linear regression method
+                  trControl = control)
+
+# Print the model results
+print(lm_model)
+X11()
+plot(x=c(1:100), UAR_Lag2[c(1901:2000),1], type="l")
+lines(x=c(1:100), as.matrix(cbind(rep(1,100),UAR_Lag2[c(1901:2000),-1]))%*%as.matrix(lm_model$finalModel$coefficients), col="blue")
+#lines(x=c(1:100), exp(as.matrix(SLR_Lag2[c(1901:2000),])%*%as.matrix(lm_model$finalModel$coefficients))*SLR_Lag2[c(1901:2000),2], col="blue")
+y_true= merged$AdjClosed[c(1903:2002)]
+y_pred = exp(as.matrix(cbind(rep(1,100),UAR_Lag2[c(1901:2000),-1]))%*%as.matrix(lm_model$finalModel$coefficients))*merged$AdjClosed[c(1902:2001)]
+plot(y_true,type="l")
+lines( y_pred,type="l",col="blue")
+```
+
+```{r eval=FALSE}
+library(caret)
+
+# Assuming your data is stored in a matrix called 'data_matrix'
+# Assuming the first column is the response variable and the rest are predictor variables
+
+# Split data into predictors and response
+nrow(UAR_Lag10)
+response <- UAR_Lag10[c(1:1900), 1]
+predictors <- UAR_Lag10[c(1:1900), -1]
+#for one lag
+#predictors <- as.matrix(SLR_Lag1[c(1:1900), -1])
+#colnames(predictors)[1] <- "Yt_Lag1"
+
+# Set up the control for cross-validation
+control <- trainControl(method = "cv",  # Cross-validation method
+                        number = 5,     # Number of folds
+                        verboseIter = TRUE)  # Print progress during training
+
+# Train the linear regression model using cross-validation
+lm_model <- train(x=predictors, y=response, 
+                  method = "lmStepAIC",  # Linear regression method
+                  trControl = control)
+
+# Print the model results
+print(lm_model)
+X11()
+plot(x=c(1:100), UAR_Lag10[c(1901:2000),1], type="l")
+selected_variables <- rownames(as.matrix(lm_model$finalModel$coefficients))[-1]
+lines(x=c(1:100), as.matrix(cbind(rep(1,100),UAR_Lag10[c(1901:2000),selected_variables]))%*%as.matrix(lm_model$finalModel$coefficients), col="blue")
+#lines(x=c(1:100), exp(as.matrix(SLR_Lag2[c(1901:2000),])%*%as.matrix(lm_model$finalModel$coefficients))*SLR_Lag2[c(1901:2000),2], col="blue")
+y_true= merged$AdjClosed[c(1911:2010)]
+y_pred = exp(as.matrix(cbind(rep(1,100),UAR_Lag10[c(1901:2000),selected_variables]))%*%as.matrix(lm_model$finalModel$coefficients))*merged$AdjClosed[c(1910:2009)]
+plot(y_true,type="l")
+lines(y_pred,type="l",col="blue")
+```
+
+```{r eval=FALSE}
+library(caret)
+
+# Assuming your data is stored in a matrix called 'data_matrix'
+# Assuming the first column is the response variable and the rest are predictor variables
+
+# Split data into predictors and response
+nrow(MAR_Lag10)
+response <- MAR_Lag10[c(1:1900), 1]
+predictors <- MAR_Lag10[c(1:1900), -1]
+#for one lag
+#predictors <- as.matrix(SLR_Lag1[c(1:1900), -1])
+#colnames(predictors)[1] <- "Yt_Lag1"
+
+# Set up the control for cross-validation
+control <- trainControl(method = "cv",  # Cross-validation method
+                        number = 5,     # Number of folds
+                        verboseIter = TRUE)  # Print progress during training
+
+# Train the linear regression model using cross-validation
+lm_model <- train(x=predictors, y=response, 
+                  method = "lmStepAIC",  # Linear regression method
+                  trControl = control)
+
+# Print the model results
+print(lm_model)
+X11()
+plot(x=c(1:100), MAR_Lag10[c(1901:2000),1], type="l")
+selected_variables <- rownames(as.matrix(lm_model$finalModel$coefficients))[-1]
+lines(x=c(1:100), as.matrix(cbind(rep(1, 100),MAR_Lag10[c(1901:2000),selected_variables]))%*%as.matrix(lm_model$finalModel$coefficients), col="blue")
+#lines(x=c(1:100), exp(as.matrix(SLR_Lag2[c(1901:2000),])%*%as.matrix(lm_model$finalModel$coefficients))*SLR_Lag2[c(1901:2000),2], col="blue")
+y_true= merged$AdjClosed[c(1911:2010)]
+y_pred = exp(as.matrix(cbind(rep(1, 100),MAR_Lag10[c(1901:2000),selected_variables]))%*%as.matrix(lm_model$finalModel$coefficients))*merged$AdjClosed[c(1910:2009)]
+plot(y_true,type="l")
+lines(y_pred,type="l",col="blue")
+```
+
+```{r eval=FALSE}
 plot(trend$aapl,type='l')
 plot(price$Close,type='l',xlab='Time',ylab='Close
 Prices',main='Weekly Close Prices of aapl')
