@@ -8,7 +8,7 @@
 \usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage{booktabs} % for tables
-\usepackage{biblatex}
+\usepackage[sorting=none]{biblatex}
 \addbibresource{cite.bib}
 
 
@@ -48,7 +48,7 @@ Forecasting, Stock Prices, Machine Learning, Autoregression, Linear Regression.
 \section{Introduction}
 A stock signifies an investment representing ownership in a company. The total ownership of a company is divided into shares, with each share representing an equal portion of the business. The stock market functions as a marketplace where individuals can purchase shares of stock. 
 %Analogous to various other markets like grocery stores or farmers’ markets, where multiple vendors gather to sell their products, the stock market serves as a central hub for trading securities. Similarly to a farmers’ market where different farmers offer their produce, customers have the opportunity to explore various investment options and make purchases according to their preferences. In essence, the stock market operates similarly to these markets, acting as a centralized venue where buyers and sellers converge to trade stocks and other investment instruments, including mutual funds, which pool together multiple stocks. However, unlike a single market, the stock market comprises several smaller markets known as stock exchanges.
-Utilizing machine learning algorithms for stock price prediction aids in uncovering the potential future value of company stocks and other financial assets traded on various exchanges. The fundamental objective of predicting stock prices is to attain substantial profits. However, forecasting the performance of the stock market is a formidable challenge. Several factors come into play in this prediction process, encompassing both tangible and psychological elements, rational and irrational behaviors, among others.
+Utilizing machine learning algorithms for stock price prediction aids in uncovering the potential future value of company stocks and other financial assets traded on various exchanges.\cite{Vijh2020} The fundamental objective of predicting stock prices is to attain substantial profits. However, forecasting the performance of the stock market is a formidable challenge. Several factors come into play in this prediction process, encompassing both tangible and psychological elements, rational and irrational behaviors, among others.
 The interaction of these diverse factors renders share prices highly dynamic and volatile, thereby posing significant hurdles to achieving precise predictions with a high degree of accuracy.
 
 
@@ -62,13 +62,13 @@ $y$ represents the dependent variable, $x_1, x_2, ..., x_p$ represents the indep
 
 \subsection*{ARIMA}
 
-ARIMA, or AutoRegressive Integrated Moving Average, is a forecasting algorithm grounded in the principle that historical values of a time series can offer insights into future trends. Belonging to a class of models renowned for elucidating time series behavior through its own past data, including lags and lagged forecast errors, ARIMA excels in predicting forthcoming values. It is particularly applicable to time series datasets exhibiting discernible patterns rather than random noise. ARIMA entails three key parameters: $p$, $d$, and $q$. The parameter $p$ denotes the number of autoregressive terms or lag observations, providing lagged data points. $d$ signifies the degree of differencing, indicating the number of times lagged indicators have been subtracted to achieve data stationarity. $q$ represents the number of forecast errors in the model, akin to the size of the moving average window. These parameters, integers by nature, are pivotal in defining the ARIMA model's functionality and can take a value of 0, implying their exclusion from the model. ARIMA models are denoted by their parameter combinations, such as ARIMA(1, 0, 0) for the first-order autoregressive model or ARIMA(0, 1, 0) for the random walk model. Consequently, ARIMA can transform into various models: ARMA $(d=0)$, AR $(p>0, d=0, q=0)$, and MA $(p=0, d=0, q>0)$.  Once the parameters are set, the ARIMA model estimates coefficients $\alpha$ and $\theta$, utilizing past data points to forecast future values.
+ARIMA, or AutoRegressive Integrated Moving Average, is a forecasting algorithm grounded in the principle that historical values of a time series can offer insights into future trends.\cite{Khanderwal2021} Belonging to a class of models renowned for elucidating time series behavior through its own past data, including lags and lagged forecast errors, ARIMA excels in predicting forthcoming values. It is particularly applicable to time series datasets exhibiting discernible patterns rather than random noise. ARIMA entails three key parameters: $p$, $d$, and $q$. The parameter $p$ denotes the number of autoregressive terms or lag observations, providing lagged data points. $d$ signifies the degree of differencing, indicating the number of times lagged indicators have been subtracted to achieve data stationarity. $q$ represents the number of forecast errors in the model, akin to the size of the moving average window. These parameters, integers by nature, are pivotal in defining the ARIMA model's functionality and can take a value of 0, implying their exclusion from the model. ARIMA models are denoted by their parameter combinations, such as ARIMA(1, 0, 0) for the first-order autoregressive model or ARIMA(0, 1, 0) for the random walk model. Consequently, ARIMA can transform into various models: ARMA $(d=0)$, AR $(p>0, d=0, q=0)$, and MA $(p=0, d=0, q>0)$.  Once the parameters are set, the ARIMA model estimates coefficients $\alpha$ and $\theta$, utilizing past data points to forecast future values.
 
 \section{Literature review}
 
-Many researchers have done their studies in predicting stock prices using similar  machine learning models, some of them are discussed below. \\
-In 2018 \citeauthor{Xu2018} wrote a paper on predicting stock prices for Apple Inc. Her paper focuses on stock price forecasting by combining conventional time series analysis with information from Yahoo Finance and Google Trend. It aims to predict weekly changes in stock price, particularly focusing on Apple Inc. stock. Her study records important news/events related to Apple Inc. over a five-year span and uses the weekly Google trend index values to measure the magnitude of these events. The data includes weekly stock prices of Apple Inc. and key developments from Yahoo Finance, while her analysis involves applying the ARIMA model, differencing the data, and regressing stock price changes on news values. The paper also presents an algorithm for computing the value of news at a certain time, simulating the impact of news on stock prices. Her analysis reveals a significant correlation between the changes in weekly stock prices and the values of important news/events computed from the Google trend website.\\
+Many researchers have done their studies in predicting stock prices using similar  machine learning models, some of them are discussed below. 
 
+In 2018 \citeauthor{Xu2018} wrote a paper on predicting stock prices for Apple Inc. Her paper focuses on stock price forecasting by combining conventional time series analysis with information from Yahoo Finance and Google Trend. It aims to predict weekly changes in stock price, particularly focusing on Apple Inc. stock. Her study records important news/events related to Apple Inc. over a five-year span and uses the weekly Google trend index values to measure the magnitude of these events. The data includes weekly stock prices of Apple Inc. and key developments from Yahoo Finance, while her analysis involves applying the ARIMA model, differencing the data, and regressing stock price changes on news values. The paper also presents an algorithm for computing the value of news at a certain time, simulating the impact of news on stock prices. Her analysis reveals a significant correlation between the changes in weekly stock prices and the values of important news/events computed from the Google trend website.
 
 
 \section{Data}
@@ -203,7 +203,7 @@ where $\boldsymbol{\phi}_i$ are $(1\times7)$ coefficient vector for $i=1,\ldots,
 
 \subsection*{Implementation}
 
-We implement the autoregression model using the \texttt{lm} function in R.\footnote{The source code is provided here: \url{https://github.com/cld4h/DASC5420_Project}} When only using the adjusted close price as the predictor variables, we compare the result from \texttt{lm} with the result from \texttt{arima(data, order=c(p,0,0))}. For example, the fitted model of \texttt{AR(3)} is shown in Table~\ref{tab:regression}.
+We implement the autoregression model using the \texttt{lm} function in R.\footnote{The source code is provided here: \url{https://github.com/cld4h/DASC5420_Project}} When only using the adjusted close price as the predictor variables, we compare the result from \texttt{lm} with the result from \texttt{arima(data, order=c(p,0,0))}. For example, the fitted model of \texttt{AR(3)} is shown in Table~\ref{tab:regression}. The pairwise scatterplot of the predictor and response variables is shown in Fig.~\ref{fig:pairwise}.
 
 \begin{table}[htbp]
   \centering
@@ -221,27 +221,43 @@ We implement the autoregression model using the \texttt{lm} function in R.\footn
   \label{tab:regression}
 \end{table}
 
-Only using 
+\begin{figure}[htpb]
+	\centering
+	\includegraphics[width=0.4\textwidth]{pic/pairwise.png}
+	\caption{Pairwase scatterplot of $y^{'}_t$ and its lagged features}
+	\label{fig:pairwise}
+\end{figure}
+
+From Fig.~\ref{fig:pairwise} we see that there is no linear relationship between $y^{'}_t$ and its lagged values. This tells us that we need to include additional information like Google Trends key words to improve the model performance.
+
+Performing Autoregression on $\mathbf{y}_t = (y_{1,t},y_{2,t},y_{3,t},y_{4,t},y_{5,t},y_{6,t},y_{7,t})$ with a Lag of $p$ will give us $7\times p$ predictor variables. This makes our model complecated. In this case, we need to perform a variable selection. 
+
+Here we are usign stepwise regression employing the Akaike Information Criterion (AIC). This method iteratively selects the most relevant predictors to include in a regression model, aiming to maximize explanatory power while minimizing complexity. By considering the AIC, which balances model fit and parsimony, stepwise regression helps identify the optimal subset of predictors, thereby enhancing the interpretability and predictive accuracy of the model. In the context of time series analysis, where data points are chronologically ordered, stepwise regression with AIC serves as a valuable tool for uncovering meaningful relationships and understanding the underlying dynamics driving the observed temporal patterns.
 
 
 \section{Results}
 
+In this project, we select a $p=10$ as our lagged values and perform a 5-folds cross validation on the first 1900 data. We use the last 100 data to test our model performance. The predicted value of  $y^{'}_t$ and $y_t$ are plotted in Fig.\ref{fig:pred_dprice} and \ref{fig:pred_price} respectively.
+
 \begin{figure}[htpb]
 	\centering
 	\includegraphics[width=0.8\textwidth]{pic/Predicted_dAdjColsed.pdf}
-	\caption{}
+	\caption{The predicted first log difference}
 	\label{fig:pred_dprice}
 \end{figure}
 
 \begin{figure}[htpb]
 	\centering
 	\includegraphics[width=0.8\textwidth]{pic/Predicted_AdjColsed.pdf}
-	\caption{}
+	\caption{The predicted adjusted close price}
 	\label{fig:pred_price}
 \end{figure}
 
-\section{Discussion and/or Conclusion}
+\section{Discussion and Conclusion}
 
+From Fig.~\ref{fig:pred_price} we can see our model performance is not good. The prediction is very close to the adjusted close price one day earlier. This can be explained by Fig.~\ref{fig:pred_dprice}: the value of predicted $y^{'}_t$ is very close to 0. Since the predicted value is calculated by $y_{t-1}\times e^{y^{'}_{t}}$ where $e^{y^{'}_{t}}$ is close to $1$ when $y^{'}_t\approx0$.
+
+In conclusion, the linear regression model gives a bad performance at predicting the apple stock market data using Google Trends keywords of apple products. One can try some more advance models like LSTM and incorporate some additional predictor variables to improve the performance\cite{Aasi2021}.
 
 \printbibliography
 
