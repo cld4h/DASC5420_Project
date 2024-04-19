@@ -265,6 +265,11 @@ dim(UAR_Lag3)
 ```{r fig.height = 5}
 pairs(UAR_Lag3)
 ```
+```{r echo=FALSE, eval=FALSE}
+png("pic/pairwise.png")
+pairs(UAR_Lag3)
+dev.off()
+```
 
 This indicate that Lag 3 of the stock price itself does not provide enough infomation for prediction.
 
