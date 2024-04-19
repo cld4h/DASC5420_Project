@@ -9,11 +9,6 @@
 \usepackage{hyperref}
 \usepackage{booktabs} % for tables
 \usepackage{biblatex}
-%\usepackage[hyperref=true,backend=biber,sorting=none,backref=true]{biblatex}
-%backend=biber表示后端处理的程序为biber；
-%style=authoryear-icomp
-%hyperref=true和backref=true表示为各个参考文献的引用处、及定理、定义、例子等的引用处都添加上超链接；
-%sorting=none表示按照参考文献在论文中出现的先后顺序排序。
 \addbibresource{cite.bib}
 
 
@@ -54,7 +49,7 @@ Utilizing machine learning algorithms for stock price prediction aids in uncover
 The interaction of these diverse factors renders share prices highly dynamic and volatile, thereby posing significant hurdles to achieving precise predictions with a high degree of accuracy.
 
 
-\subsection*{Linear Regression:}
+\subsection*{Linear Regression}
 
 Linear regression is a statistical method used to model the relationship between a dependent variable and one or more independent variables by fitting a linear equation to observed data. In essence, it seeks to determine the best-fitting straight line through the data points. The goal is to find the coefficients of the linear equation that minimize the difference between the observed and predicted values of the dependent variable. Linear regression is widely employed for prediction and forecasting tasks, as well as for understanding the relationships between variables in a dataset.
 
@@ -62,11 +57,14 @@ $Y = \beta_0+\beta_1 x_1 + \beta_2 x_2 + \ldots+\beta_n x_n + \epsilon$
 y represents the dependent variable, x1, x2, ..., xn represents the independent variables, $\beta_0,\beta_1,\beta_2,\ldots,\beta_n$ represents the coefficients associated with each independent variable, and n is the number of independent variables. $\epsilon$represents the error term, which captures the difference between the observed and predicted values of the dependent variable.
 
 
-\subsection*{ARIMA:}
+\subsection*{ARIMA}
 
 ARIMA, or AutoRegressive Integrated Moving Average, is a forecasting algorithm grounded in the principle that historical values of a time series can offer insights into future trends. Belonging to a class of models renowned for elucidating time series behavior through its own past data, including lags and lagged forecast errors, ARIMA excels in predicting forthcoming values. It is particularly applicable to time series datasets exhibiting discernible patterns rather than random noise. ARIMA entails three key parameters: p, d, and q. The parameter p denotes the number of autoregressive terms or lag observations, providing lagged data points. d signifies the degree of differencing, indicating the number of times lagged indicators have been subtracted to achieve data stationarity. q represents the number of forecast errors in the model, akin to the size of the moving average window. These parameters, integers by nature, are pivotal in defining the ARIMA model's functionality and can take a value of 0, implying their exclusion from the model. Consequently, ARIMA can transform into various models: ARMA (p=0, d=0), AR (p$>$0, d=0, q=0), and MA (p=0, d=0, q$>$0). ARIMA models are denoted by their parameter combinations, such as ARIMA(1, 0, 0) for the first-order autoregressive model or ARIMA(0, 1, 0) for the random walk model. Once the parameters are set, the ARIMA model estimates coefficients $\alpha$ and $\theta$, utilizing past data points to forecast future values.
 
 \section{Literature review}
+
+Many researchers have done their studies in predicting stock prices using similar  machine learning models, some of them are discussed below. \\
+In 2011 Selene Yue Xu wrote a paper on predicting stock prices for Apple Inc. Her paper focuses on stock price forecasting by combining conventional time series analysis with information from Yahoo Finance and Google Trend. It aims to predict weekly changes in stock price, particularly focusing on Apple Inc. stock. Her study records important news/events related to Apple Inc. over a five-year span and uses the weekly Google trend index values to measure the magnitude of these events. The data includes weekly stock prices of Apple Inc. and key developments from Yahoo Finance, while her analysis involves applying the ARIMA model, differencing the data, and regressing stock price changes on news values. The paper also presents an algorithm for computing the value of news at a certain time, simulating the impact of news on stock prices. Her analysis reveals a significant correlation between the changes in weekly stock prices and the values of important news/events computed from the Google trend website.\\
 
 
 
@@ -128,7 +126,7 @@ Plot the graphs of $\sqrt{y_t}-\sqrt{y_{t-1}}$ (as shown in Fig.~\ref{fig:dsqrt}
 
 \section{Method}
 
-\subsection*{Univariate time series regression}
+\subsection*{Autoregression with one variable}\label{mod1}
 
 We use $y_{t}$ to represent the adjusted close price of Apple stock.
 $y^{'}_{t} = \ln(y_{t})-\ln(y_{t-1}) = \ln(\frac{y_{t}}{y_{t-1}})$ represent the first difference of log of $y_{t}$.
@@ -146,19 +144,19 @@ The predicted value for $y_t$ is calculated as follows:
 \hat{y}_t = \exp\{c + \phi_{1}y^{'}_{t-1} + \phi_{2}y^{'}_{t-2} + \dots + \phi_{p}y^{'}_{t-p}\}\cdot y_{t-1}
 \]
 
-\subsection*{Multivariate time series regression}
+\subsection*{Autoregression with multiple variables}
+\label{mod2}
 
-
-
-From Google trends, we get the interest over time of keywords ``Apple Watch", ``MacBook", ``AirPods", ``iPad", ``iPhone", represented by variable $y_{1,t},y_{2,t},y_{3,t},y_{4,t},y_{5,t}$ respectively. Also, we take the volume of the apple stock represented by variable $y_{6,t}$, the first difference of the adjusted close price of Apple stock as $y_{7,t}$ (which is $y^{'}_t$ in the univariate scenario). $\mathbf{y}_t = (y_{1,t},y_{2,t},y_{3,t},y_{4,t},y_{5,t},y_{6,t},y_{7,t})$.
+From Google trends, we get the interest over time of keywords ``Apple Watch", ``MacBook", ``AirPods", ``iPad", ``iPhone", represented by variable $y_{3,t},y_{4,t},y_{5,t},y_{6,t},y_{7,t}$ respectively. Also, we take the volume of the apple stock represented by variable $y_{2,t}$, the first difference of the adjusted close price of Apple stock as $y_{1,t}$ (which is also $y^{'}_t$ scenario). $\mathbf{y}_t = (y_{1,t},y_{2,t},y_{3,t},y_{4,t},y_{5,t},y_{6,t},y_{7,t})$.
 
 We define our Vector Auto-Regressive(VAR) model as follows:
 
 \[
-\mathbf{y}_t = A_1\mathbf{y}_{t-1}+\ldots+A_p\mathbf{y}_{t-p}+\mathbf{u}_t
+y^{'}_t = \boldsymbol{\phi}_1\mathbf{y}_{t-1}^T+\ldots+\boldsymbol{\phi}_p\mathbf{y}_{t-p}^T+\epsilon_t
 \]
 
-where $A_i$ are $(7\times7)$ coefficient matrices for $i=1,\ldots,p$ and $\mathbf{u}_t$ is a 7-dimensional process with E($\mathbf{u}_t$) $= \mathbf{0}$ and time invariant positive definite covariance matrix E(${\mathbf{u}_t}{\mathbf{u}_t}^T$)$=\Sigma_\mathbf{u}$(white noise).
+where $\boldsymbol{\phi}_i$ are $(1\times7)$ coefficient vector for $i=1,\ldots,p$.
+
 
 
 
